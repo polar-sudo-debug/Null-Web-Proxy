@@ -109,18 +109,13 @@
             <button onclick="goForward()"><i class='bx bx-chevron-right'></i></button>
             <button onclick="reloadPage()"><i class='bx bx-refresh'></i></button>
         </div>
-        <iframe id="proxyFrame"></iframe>
+        <iframe id="proxyFrame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
     </div>
     <script>
         function unblockWebsite() {
             const website = document.getElementById('website').value;
             const proxyFrame = document.getElementById('proxyFrame');
-            const headers = new Headers();
-            headers.append('origin', 'null');
-            headers.append('x-requested-with', 'XMLHttpRequest');
-            fetch(`https://cors-anywhere.herokuapp.com/${website}`, { headers })
-                .then(response => response.text())
-                .then(data => proxyFrame.srcdoc = data);
+            proxyFrame.src = `https://cors-anywhere.herokuapp.com/${website}`;
         }
         function goBack() {
             document.getElementById('proxyFrame').contentWindow.history.back();
@@ -131,6 +126,16 @@
         function reloadPage() {
             document.getElementById('proxyFrame').contentWindow.location.reload();
         }
+        document.getElementById('proxyFrame').addEventListener('load', function() {
+            const links = document.getElementById('proxyFrame').contentDocument.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const href = link.getAttribute('href');
+                    unblockWebsite(href);
+                });
+            });
+        });
     </script>
 </body>
 </html>
