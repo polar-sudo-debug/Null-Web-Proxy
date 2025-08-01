@@ -4,46 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Null Proxy</title>
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #2b2b2b, #4a4a4a);
             color: #ffffff;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
         }
         .container {
             text-align: center;
-            padding: 20px;
+            width: 80%;
+            max-width: 1200px;
+            margin-top: 20px;
             background: rgba(0, 0, 0, 0.8);
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             animation: fadeIn 2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        input, button {
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
+        .url-bar {
+            display: flex;
+            align-items: center;
             width: 100%;
-            max-width: 400px;
+            padding: 10px;
+            border: none;
+            border-bottom: 2px solid #4a4a4a;
         }
-        button {
+        .url-bar input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+            background: #333333;
+            color: #ffffff;
+        }
+        .url-bar button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            font-size: 16px;
             background: #1a1a1a;
             color: #ffffff;
             cursor: pointer;
             transition: background 0.3s;
         }
-        button:hover {
+        .url-bar button:hover {
+            background: #333333;
+        }
+        .navigation-buttons {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .navigation-buttons button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            background: #1a1a1a;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .navigation-buttons button:hover {
             background: #333333;
         }
         iframe {
             width: 100%;
-            height: 500px;
+            height: 600px;
             border: none;
             margin-top: 20px;
             border-radius: 10px;
@@ -58,8 +97,15 @@
 <body>
     <div class="container">
         <h1>Null Proxy</h1>
-        <input type="text" id="website" placeholder="Enter website URL">
-        <button onclick="unblockWebsite()">Unblock</button>
+        <div class="url-bar">
+            <input type="text" id="website" placeholder="Enter website URL" onkeypress="if(event.keyCode==13) unblockWebsite()">
+            <button onclick="unblockWebsite()">Go</button>
+        </div>
+        <div class="navigation-buttons">
+            <button onclick="goBack()"><i class='bx bx-chevron-left'></i></button>
+            <button onclick="goForward()"><i class='bx bx-chevron-right'></i></button>
+            <button onclick="reloadPage()"><i class='bx bx-refresh'></i></button>
+        </div>
         <iframe id="proxyFrame"></iframe>
     </div>
     <script>
@@ -67,6 +113,15 @@
             const website = document.getElementById('website').value;
             const proxyFrame = document.getElementById('proxyFrame');
             proxyFrame.src = `https://cors-anywhere.herokuapp.com/${website}`;
+        }
+        function goBack() {
+            document.getElementById('proxyFrame').contentWindow.history.back();
+        }
+        function goForward() {
+            document.getElementById('proxyFrame').contentWindow.history.forward();
+        }
+        function reloadPage() {
+            document.getElementById('proxyFrame').contentWindow.location.reload();
         }
     </script>
 </body>
