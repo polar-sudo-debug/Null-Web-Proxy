@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 // Proxy middleware options
 const options = {
-    target: 'http://discord.com/login', // Change this to the target website
+    target: 'https://discord.com/', // Change this to the target website
     changeOrigin: true,
     onProxyReq: (proxyReq, req, res) => {
         // Modify headers if needed
