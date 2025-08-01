@@ -112,15 +112,15 @@
         <iframe id="proxyFrame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
     </div>
     <script>
-        function unblockWebsite(url) {
+        function unblockWebsite() {
+            const website = document.getElementById('website').value;
+            if (!website) {
+                alert('Please enter a valid URL.');
+                return;
+            }
             const proxyFrame = document.getElementById('proxyFrame');
-            const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
-            const headers = new Headers();
-            headers.append('origin', 'null');
-            headers.append('x-requested-with', 'XMLHttpRequest');
-            fetch(proxyUrl, { headers })
-                .then(response => response.text())
-                .then(data => proxyFrame.srcdoc = data);
+            const proxyUrl = `https://cors-anywhere.herokuapp.com/${website}`;
+            proxyFrame.src = proxyUrl;
         }
         function goBack() {
             document.getElementById('proxyFrame').contentWindow.history.back();
