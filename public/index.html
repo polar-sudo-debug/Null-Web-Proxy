@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Null Proxy</title>
+    <title>Custom Proxy</title>
     <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
     <style>
         body {
@@ -99,7 +99,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Null Proxy</h1>
+        <h1>Custom Proxy</h1>
         <div class="url-bar">
             <input type="text" id="website" placeholder="Enter website URL" onkeypress="if(event.keyCode==13) unblockWebsite()">
             <button onclick="unblockWebsite()">Go</button>
@@ -119,7 +119,7 @@
                 return;
             }
             const proxyFrame = document.getElementById('proxyFrame');
-            const proxyUrl = `https://cors-anywhere.herokuapp.com/${website}`;
+            const proxyUrl = `/proxy/${website}`;
             proxyFrame.src = proxyUrl;
         }
         function goBack() {
@@ -139,39 +139,6 @@
                     const href = link.getAttribute('href');
                     unblockWebsite(href);
                 });
-            });
-        });
-        // Advanced logic to handle resource loading
-        function handleResourceLoading(event) {
-            const target = event.target;
-            if (target.tagName === 'IMG' || target.tagName === 'LINK' || target.tagName === 'SCRIPT') {
-                const src = target.getAttribute('src') || target.getAttribute('href');
-                if (src) {
-                    const proxySrc = `https://cors-anywhere.herokuapp.com/${src}`;
-                    const headers = new Headers();
-                    headers.append('origin', 'null');
-                    headers.append('x-requested-with', 'XMLHttpRequest');
-                    fetch(proxySrc, { headers })
-                        .then(response => response.text())
-                        .then(data => {
-                            if (target.tagName === 'IMG') {
-                                target.src = `data:image/png;base64,${btoa(data)}`;
-                            } else if (target.tagName === 'LINK') {
-                                const style = document.createElement('style');
-                                style.innerHTML = data;
-                                document.head.appendChild(style);
-                            } else if (target.tagName === 'SCRIPT') {
-                                eval(data);
-                            }
-                        });
-                }
-            }
-        }
-        document.getElementById('proxyFrame').addEventListener('load', function() {
-            const contentDocument = document.getElementById('proxyFrame').contentDocument;
-            contentDocument.addEventListener('DOMContentLoaded', function() {
-                const resources = contentDocument.querySelectorAll('img, link[rel="stylesheet"], script');
-                resources.forEach(handleResourceLoading);
             });
         });
     </script>
