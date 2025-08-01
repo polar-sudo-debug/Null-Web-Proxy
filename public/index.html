@@ -118,8 +118,9 @@
                 alert('Please enter a valid URL.');
                 return;
             }
+            // Ensure the URL starts with http:// or https://
+            const proxyUrl = `/proxy/${website.startsWith('http') ? website : `https://${website}`}`;
             const proxyFrame = document.getElementById('proxyFrame');
-            const proxyUrl = `/proxy/${website}`;
             proxyFrame.src = proxyUrl;
         }
         function goBack() {
