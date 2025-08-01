@@ -112,10 +112,15 @@
         <iframe id="proxyFrame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
     </div>
     <script>
-        function unblockWebsite() {
-            const website = document.getElementById('website').value;
+        function unblockWebsite(url) {
             const proxyFrame = document.getElementById('proxyFrame');
-            proxyFrame.src = `https://cors-anywhere.herokuapp.com/${website}`;
+            const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
+            const headers = new Headers();
+            headers.append('origin', 'null');
+            headers.append('x-requested-with', 'XMLHttpRequest');
+            fetch(proxyUrl, { headers })
+                .then(response => response.text())
+                .then(data => proxyFrame.srcdoc = data);
         }
         function goBack() {
             document.getElementById('proxyFrame').contentWindow.history.back();
@@ -134,6 +139,39 @@
                     const href = link.getAttribute('href');
                     unblockWebsite(href);
                 });
+            });
+        });
+        // Advanced logic to handle resource loading
+        function handleResourceLoading(event) {
+            const target = event.target;
+            if (target.tagName === 'IMG' || target.tagName === 'LINK' || target.tagName === 'SCRIPT') {
+                const src = target.getAttribute('src') || target.getAttribute('href');
+                if (src) {
+                    const proxySrc = `https://cors-anywhere.herokuapp.com/${src}`;
+                    const headers = new Headers();
+                    headers.append('origin', 'null');
+                    headers.append('x-requested-with', 'XMLHttpRequest');
+                    fetch(proxySrc, { headers })
+                        .then(response => response.text())
+                        .then(data => {
+                            if (target.tagName === 'IMG') {
+                                target.src = `data:image/png;base64,${btoa(data)}`;
+                            } else if (target.tagName === 'LINK') {
+                                const style = document.createElement('style');
+                                style.innerHTML = data;
+                                document.head.appendChild(style);
+                            } else if (target.tagName === 'SCRIPT') {
+                                eval(data);
+                            }
+                        });
+                }
+            }
+        }
+        document.getElementById('proxyFrame').addEventListener('load', function() {
+            const contentDocument = document.getElementById('proxyFrame').contentDocument;
+            contentDocument.addEventListener('DOMContentLoaded', function() {
+                const resources = contentDocument.querySelectorAll('img, link[rel="stylesheet"], script');
+                resources.forEach(handleResourceLoading);
             });
         });
     </script>
